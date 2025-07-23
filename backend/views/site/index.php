@@ -40,7 +40,7 @@ $activeUser = yii::$app->controller->getActiveuser();
 					<h4 class="value">
 						<span><?=$guestCount?></span><span></span></h4>
 					<p class="description">
-						Current Visitors</p>
+						Current Guests</p>
 			   
 				</div>
 			</div>

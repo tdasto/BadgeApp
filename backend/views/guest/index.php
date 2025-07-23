@@ -8,7 +8,7 @@ use backend\models\Guest;
 /* @var $searchModel backend\models\search\WorkCreditsSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Visitor Log';
+$this->title = 'Guest Log';
 $this->params['breadcrumbs'][] = ['label' => $this->title, 'url' => ['guest/index']];
 
 $guestModel = new Guest();

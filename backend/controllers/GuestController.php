@@ -43,7 +43,7 @@ class GuestController extends SiteController {
 			if ($model->tmp_badge) { $model->tmp_badge = trim($model->tmp_badge); }
 
 			if($model->save()) {
-				Yii::$app->getSession()->setFlash('success', 'Visitor has been added!');
+				Yii::$app->getSession()->setFlash('success', 'Guest has been added!');
 
 				$guest = Guest::find()->where(['id'=>$model->id])->one();
 				if($guest->save()) {
@@ -113,7 +113,7 @@ class GuestController extends SiteController {
 		Yii::warning("Rec Updated? ".$saveOut);
 
 		if($saveOut) {
-			Yii::$app->getSession()->setFlash('success', 'Visitor has been Checked out');
+			Yii::$app->getSession()->setFlash('success', 'Guest has been Checked out');
 		} else {
 			Yii::$app->getSession()->setFlash('error', 'Failed to Check out');
 		}
@@ -165,7 +165,7 @@ class GuestController extends SiteController {
 			if($guest->save()) {
 				$sql = "update guest set g_paid ='$model->g_paid' where id = $model->id";
 				$cmd = Yii::$app->getDb()->createCommand($sql)->execute();
-				Yii::$app->getSession()->setFlash('success', 'Visitor has been updated');
+				Yii::$app->getSession()->setFlash('success', 'Guest has been updated');
 				return $this->redirect(['/guest/index']);
 			} else {
 				yii::$app->controller->createLog(true, 'trex_C_GC:171 Save error', var_export($model->errors,true));

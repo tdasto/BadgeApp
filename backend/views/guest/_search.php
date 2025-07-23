@@ -36,7 +36,7 @@ if (isset($_REQUEST['BadgesDatabaseSearch']['pagesize'])) {
 
 	<div class="col-sm-2">
 
-		<?= $form->field($model, 'atRange_condition')->dropDownlist(['all'=>'All','atRange'=>'At Range','gone'=>'Past Visitors'],['value'=>$model->atRange_condition !=null ? $model->atRange_condition : 'atRange'])->label('Fliter by') ?>
+		<?= $form->field($model, 'atRange_condition')->dropDownlist(['all'=>'All','atRange'=>'At Range','gone'=>'Past Guests'],['value'=>$model->atRange_condition !=null ? $model->atRange_condition : 'atRange'])->label('Fliter by') ?>
 	</div>
 	<div class="col-sm-2">
 		<div class=" form-group btn-group ">

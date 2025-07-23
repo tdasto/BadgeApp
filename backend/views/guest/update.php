@@ -6,7 +6,7 @@ use yii\helpers\Html;
 /* @var $model backend\models\WorkCredits */
 
 $this->title = 'Update Guest: ';// . $model->id;
-$this->params['breadcrumbs'][] = ['label' => 'Visitor Log', 'url' => ['guest/index']];
+$this->params['breadcrumbs'][] = ['label' => 'Guest Log', 'url' => ['guest/index']];
 $this->params['breadcrumbs'][] = $this->title;
 
 ?>

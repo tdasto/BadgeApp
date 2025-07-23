@@ -110,7 +110,7 @@ $myList = backend\controllers\PaymentController::GetPaymentTypes($confParams);
 				<?= $form->field($model, 'g_state'); } ?>
 		</div>
 	</div>
-	<h3><p><b>Type of Visitor?</b></p></h3>		
+	<h3><p><b>Type of Guest?</b></p></h3>		
 	<div class="row">
 		<div class="col-xs-6 col-sm-3" ><p>
 	<?php if($model->isNewRecord) { ?>

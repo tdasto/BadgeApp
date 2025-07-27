@@ -146,6 +146,148 @@ class GuestController extends SiteController {
 		}
 	}
 
+	public function actionApiCreate() {
+		Yii::$app->response->format = yii\web\Response::FORMAT_JSON;
+		header('Access-Control-Allow-Origin: http://localhost:3000');
+		header('Access-Control-Allow-Methods: POST, GET, OPTIONS');
+		header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
+		header('Access-Control-Allow-Credentials: true');
+
+		if (Yii::$app->request->isOptions) {
+			return [];
+		}
+
+		$model = new Guest();
+		$data = json_decode(Yii::$app->request->getRawBody(), true);
+		
+		if ($data && $model->load($data, '')) {
+			$model->g_first_name = trim($model->g_first_name);
+			$model->g_last_name = trim($model->g_last_name);
+			$model->g_city = trim($model->g_city);
+			$model->g_state = strtoupper(trim($model->g_state));
+			if ($model->tmp_badge) { $model->tmp_badge = trim($model->tmp_badge); }
+
+			if($model->save()) {
+				$this->createLog($this->getNowTime(), $_SESSION['user'] ?? 'api', 'Added Guest via API: '.$model->g_first_name.' For Badge: '.$model->badge_number.' Paid: '.$model->g_paid);
+				return ['status' => 'success', 'data' => $model->toArray(), 'message' => 'Guest created successfully'];
+			} else {
+				return ['status' => 'error', 'errors' => $model->errors, 'message' => 'Failed to create guest'];
+			}
+		}
+		return ['status' => 'error', 'message' => 'Invalid data provided'];
+	}
+
+	public function actionApiUpdate($id) {
+		Yii::$app->response->format = yii\web\Response::FORMAT_JSON;
+		header('Access-Control-Allow-Origin: http://localhost:3000');
+		header('Access-Control-Allow-Methods: POST, PUT, GET, OPTIONS');
+		header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
+		header('Access-Control-Allow-Credentials: true');
+
+		if (Yii::$app->request->isOptions) {
+			return [];
+		}
+
+		$model = $this->findModel($id);
+		$data = json_decode(Yii::$app->request->getRawBody(), true);
+		
+		if ($data && $model->load($data, '')) {
+			$model->g_first_name = trim($model->g_first_name);
+			$model->g_last_name = trim($model->g_last_name);
+			$model->g_city = trim($model->g_city);
+			$model->g_state = strtoupper(trim($model->g_state));
+			if ($model->tmp_badge) { $model->tmp_badge = trim($model->tmp_badge); }
+
+			if($model->save()) {
+				$this->createLog($this->getNowTime(), $_SESSION['user'] ?? 'api', 'Updated Guest via API: '.$model->g_first_name.' ID: '.$id);
+				return ['status' => 'success', 'data' => $model->toArray(), 'message' => 'Guest updated successfully'];
+			} else {
+				return ['status' => 'error', 'errors' => $model->errors, 'message' => 'Failed to update guest'];
+			}
+		}
+		return ['status' => 'error', 'message' => 'Invalid data provided'];
+	}
+
+	public function actionApiList() {
+		Yii::$app->response->format = yii\web\Response::FORMAT_JSON;
+		header('Access-Control-Allow-Origin: http://localhost:3000');
+		header('Access-Control-Allow-Methods: GET, OPTIONS');
+		header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
+		header('Access-Control-Allow-Credentials: true');
+
+		if (Yii::$app->request->isOptions) {
+			return [];
+		}
+
+		$searchModel = new GuestSearch();
+		$dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+
+		if(!yii::$app->controller->hasPermission('guest/all')) {
+			$sqlwhere="badge_number=".$_SESSION["badge_number"];
+			$dataProvider->query->andWhere($sqlwhere);
+		}
+
+		$guests = [];
+		foreach ($dataProvider->getModels() as $guest) {
+			$guests[] = $guest->toArray();
+		}
+
+		return [
+			'status' => 'success',
+			'data' => $guests,
+			'pagination' => [
+				'totalCount' => $dataProvider->getTotalCount(),
+				'pageCount' => $dataProvider->getPagination()->getPageCount(),
+				'currentPage' => $dataProvider->getPagination()->getPage(),
+				'pageSize' => $dataProvider->getPagination()->getPageSize(),
+			]
+		];
+	}
+
+	public function actionApiCheckout($id) {
+		Yii::$app->response->format = yii\web\Response::FORMAT_JSON;
+		header('Access-Control-Allow-Origin: http://localhost:3000');
+		header('Access-Control-Allow-Methods: POST, OPTIONS');
+		header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
+		header('Access-Control-Allow-Credentials: true');
+
+		if (Yii::$app->request->isOptions) {
+			return [];
+		}
+
+		$nowDate = date("Y-m-d G:i:s",strtotime(yii::$app->controller->getNowTime()));
+		$sql="UPDATE guest set time_out='".$nowDate. "' WHERE id=".$id;
+		$connection = Yii::$app->getDb();
+		$command = $connection->createCommand($sql);
+		$saveOut = $command->execute();
+
+		if($saveOut) {
+			$this->createLog($this->getNowTime(), $_SESSION['user'] ?? 'api', 'Checked out Guest via API: ID '.$id);
+			return ['status' => 'success', 'message' => 'Guest checked out successfully'];
+		} else {
+			return ['status' => 'error', 'message' => 'Failed to check out guest'];
+		}
+	}
+
+	public function actionApiDelete($id) {
+		Yii::$app->response->format = yii\web\Response::FORMAT_JSON;
+		header('Access-Control-Allow-Origin: http://localhost:3000');
+		header('Access-Control-Allow-Methods: DELETE, OPTIONS');
+		header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
+		header('Access-Control-Allow-Credentials: true');
+
+		if (Yii::$app->request->isOptions) {
+			return [];
+		}
+
+		if($model=$this->findModel($id)) {
+			$this->createLog($this->getNowTime(), $_SESSION['user'] ?? 'api', 'Deleted Guest via API: '.$id." Name: ".$model->g_first_name.' of Badge: '.$model->badge_number.' Paid: '.$model->g_paid);
+			$model->delete();
+			return ['status' => 'success', 'message' => 'Guest deleted successfully'];
+		}
+		return ['status' => 'error', 'message' => 'Guest not found'];
+	}
+
 	public function actionUpdate($id) {
 		$model = $this->findModel($id);
 

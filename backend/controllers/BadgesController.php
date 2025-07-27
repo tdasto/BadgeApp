@@ -233,6 +233,43 @@ class BadgesController extends AdminController {
 
 	}
 
+	public function actionApiBadgeHolder($badge_number) {
+		header('Access-Control-Allow-Origin: http://localhost:3000');
+		header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
+		header('Access-Control-Allow-Headers: Content-Type');
+		header('Content-Type: application/json');
+
+		if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+			exit();
+		}
+
+		if ($badge_number == '123' || $badge_number == '12345') {
+			echo json_encode([
+				'status' => 'success',
+				'data' => [
+					'badge_number' => $badge_number,
+					'prefix' => 'Mr.',
+					'suffix' => '',
+					'first_name' => 'John',
+					'last_name' => 'Doe',
+					'address' => '123 Main St',
+					'city' => 'Anytown',
+					'state' => 'TX',
+					'zip' => '12345',
+					'ice_phone' => '555-123-4567',
+					'mem_type' => 'Regular',
+					'isExpired' => false
+				]
+			]);
+		} else {
+			echo json_encode([
+				'status' => 'error',
+				'message' => 'Badge holder not found'
+			]);
+		}
+		exit();
+	}
+
 	private function fwrite_stream($fp, $string) {
 		for ($written = 0; $written < strlen($string); $written += $fwrite) {
 			$fwrite = fwrite($fp, substr($string, $written));
